@@ -17,6 +17,8 @@ namespace AnimalManagement.Animals.Mammals.Species
         public string breed {  get; set; }
         public string livingType { get; set; }
 
+        public Cat() { }
+
         /// <summary>
         /// Constructor representing a cat object.
         /// </summary>

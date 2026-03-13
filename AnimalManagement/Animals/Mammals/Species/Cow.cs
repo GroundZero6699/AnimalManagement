@@ -17,6 +17,8 @@ namespace AnimalManagement.Animals.Mammals.Species
         public int tagNumber { get; set; }
         public double milkContent { get; set; }
 
+        public Cow() { }
+
         /// <summary>
         /// Constructor for a cow object.
         /// </summary>

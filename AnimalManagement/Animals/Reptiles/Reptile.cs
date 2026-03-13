@@ -14,8 +14,10 @@ namespace AnimalManagement.Animals.Reptiles
         public double bodyLength { get; set; }
         public string habitat { get; set; }
         public string tail { get; set; }
-        public string specie {  get; }
+        public string specie { get; set; }
         public override string species => specie;
+
+        public Reptile() { }
 
         /// <summary>
         /// Constructor representing a reptile object.

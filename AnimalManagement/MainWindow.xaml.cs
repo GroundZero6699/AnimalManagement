@@ -435,8 +435,8 @@ namespace AnimalManagement
         /// <summary>
         /// Opens a file dialog to select and load an XML, JSON, or text file, then updates the list display.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event data.</param>
+        /// <param name="sender"> Event trigger </param>
+        /// <param name="e"> Event data </param>
         private void open(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
@@ -458,8 +458,8 @@ namespace AnimalManagement
         /// <summary>
         /// Opens a save file dialog allowing the user to select a file path and saves data to the chosen file.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The event data.</param>
+        /// <param name="sender"> Event trigger </param>
+        /// <param name="e"> Event data </param>
         private void saveAs(object sender, RoutedEventArgs e)
         {
             var dialog = new SaveFileDialog
@@ -473,10 +473,17 @@ namespace AnimalManagement
             if (dialog.ShowDialog() == true)
             {
                 var filePath = dialog.FileName;
+                
                 manager.saveToFile(filePath);
             }
         }
 
+        /// <summary>
+        /// Checks if there is a current file path and saves to it
+        /// otherwise opens a save file dialog to select a file path and saves data to the chosen file.
+        /// </summary>
+        /// <param name="sender"> Event trigger </param>
+        /// <param name="e"> Event data </param>
         private void save(object sender, RoutedEventArgs e)
         {
             if (manager.hasCurrentFilePath)
@@ -501,6 +508,12 @@ namespace AnimalManagement
             }
         }
 
+        /// <summary>
+        /// Clears all registered animals after confirming the action with the user
+        /// resulting in an empty list and reset state.
+        /// </summary>
+        /// <param name="sender"> Event trigger </param>
+        /// <param name="e"> Event data </param>
         private void freshStart(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(

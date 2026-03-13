@@ -17,6 +17,8 @@ namespace AnimalManagement.Animals.Mammals.Species
         public string chipped { get; set; }
         public string ears { get; set; }
 
+        public Dog() { }
+
         /// <summary>
         /// Constructor for a dog object.
         /// </summary>

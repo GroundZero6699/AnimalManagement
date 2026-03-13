@@ -1,5 +1,11 @@
 ﻿using System.Windows.Media.Imaging;
 
+/*
+ * Author: Christoffer Wiik
+ * Date: 2026-02-13
+ * Description: Interface representing an animal with identification, descriptive, and classification properties.
+ */
+
 namespace AnimalManagement.Animals
 {
     /// <summary>

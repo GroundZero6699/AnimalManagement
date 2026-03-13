@@ -15,6 +15,8 @@ namespace AnimalManagement.Animals.Reptiles.Species
     {
         public string venom {  get; set; }
         public string pattern { get; set; }
+
+        public Snake() { }
         
         /// <summary>
         /// Constructor for a snake object.

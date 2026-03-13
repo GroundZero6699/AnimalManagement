@@ -15,6 +15,8 @@ namespace AnimalManagement.Animals.Reptiles.Species
     {
         public double shellWidth { get; set; }
         public int shellHardness { get; set; }
+
+        public Turtle() { }
         
         /// <summary>
         /// Constructor representing a turtle object.

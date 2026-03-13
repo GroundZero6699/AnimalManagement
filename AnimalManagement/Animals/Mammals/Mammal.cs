@@ -14,8 +14,10 @@ namespace AnimalManagement.Animals.Mammals
         public int nrOfTeeth { get; set; }
         public string fangs { get; set; }
         public string color { get; set; }
-        public string specie { get; }
+        public string specie { get; set; }
         public override string species => specie;
+
+        public Mammal() { }
 
         /// <summary>
         /// Constructor for a mammal object.

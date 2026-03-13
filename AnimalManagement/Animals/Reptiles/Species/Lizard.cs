@@ -15,6 +15,8 @@ namespace AnimalManagement.Animals.Reptiles.Species
     {
         public string venomous { get; set; }
 
+        public Lizard() { }
+
         /// <summary>
         /// Constrictor for a lizard object.
         /// </summary>
