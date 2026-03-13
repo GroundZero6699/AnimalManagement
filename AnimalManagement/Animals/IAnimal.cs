@@ -2,6 +2,9 @@
 
 namespace AnimalManagement.Animals
 {
+    /// <summary>
+    /// Represents an animal with identification, descriptive, and classification properties.
+    /// </summary>
     public interface IAnimal
     {
         int id { get; }
@@ -11,5 +14,6 @@ namespace AnimalManagement.Animals
         Genders gender { get; }
         BitmapImage image { get; }
         Types type { get; }
+        string species { get; }
     }
 }

@@ -41,7 +41,7 @@ namespace AnimalManagement
         public MainWindow()
         {
             InitializeComponent();
-            
+
             setGenders();
             setTypes();
             manager = new ListManager();
@@ -83,7 +83,7 @@ namespace AnimalManagement
         private void createNewAnimal(object sender, RoutedEventArgs e)
         {
             var types = typeChooser.SelectedItem;
-            if(types == null)
+            if (types == null)
             {
                 MessageBox.Show("Error occured no animal type choosen");
                 return;
@@ -92,7 +92,7 @@ namespace AnimalManagement
             generalData.type = type;
 
             var selectedSpecies = animalListBox.SelectedItem;
-            if(selectedSpecies == null)
+            if (selectedSpecies == null)
             {
                 MessageBox.Show("Error occured choose a species");
                 return;
@@ -104,7 +104,7 @@ namespace AnimalManagement
                 _ => throw new NotImplementedException()
             };
 
-            if(view.ShowDialog() == true)
+            if (view.ShowDialog() == true)
             {
                 IAnimal animal = type switch
                 {
@@ -160,16 +160,16 @@ namespace AnimalManagement
         /// <param name="e"> Event data for button action </param>
         private void animalChange(object sender, SelectionChangedEventArgs e)
         {
-            if(sender == typeChooser)
+            if (sender == typeChooser)
             {
-                if(typeChooser.SelectedItem is Types types)
+                if (typeChooser.SelectedItem is Types types)
                 {
                     setSubTypes(types);
                 }
             }
-            else if(sender == animalListBox)
+            else if (sender == animalListBox)
             {
-                if(animalListBox.SelectedItem is Enum species)
+                if (animalListBox.SelectedItem is Enum species)
                 {
                     switch (species)
                     {
@@ -177,7 +177,7 @@ namespace AnimalManagement
                             typeChooser.SelectedItem = Types.Mammal;
                             break;
                         case ReptileType:
-                            typeChooser.SelectedItem = Types.Reptile; 
+                            typeChooser.SelectedItem = Types.Reptile;
                             break;
                     }
                 }
@@ -196,7 +196,7 @@ namespace AnimalManagement
             imageBox.Source = null;
             animalPanel.Visibility = Visibility.Collapsed;
         }
-        
+
         /// <summary>
         /// Fills the dropdown component with enum values representing genders.
         /// </summary>
@@ -242,7 +242,7 @@ namespace AnimalManagement
                 return false;
             }
 
-            if(!int.TryParse(getAge(), out int age))
+            if (!int.TryParse(getAge(), out int age))
             {
                 MessageBox.Show("Age must be a number");
                 return false;
@@ -254,7 +254,7 @@ namespace AnimalManagement
                 return false;
             }
 
-            if(genderBox.SelectedItem == null)
+            if (genderBox.SelectedItem == null)
             {
                 MessageBox.Show("Select a gender");
                 return false;
@@ -262,7 +262,7 @@ namespace AnimalManagement
 
             return true;
         }
-        
+
         /// <summary>
         /// Opens up a file chooser to be able to load an image.
         /// Filter by file extensions.
@@ -284,7 +284,7 @@ namespace AnimalManagement
                 string filePath = fileDialog.FileName;
                 var img = new BitmapImage(new Uri(filePath));
 
-                if(generalData != null)
+                if (generalData != null)
                 {
                     generalData.image = img;
                 }
@@ -311,7 +311,7 @@ namespace AnimalManagement
             animalListBox.ItemsSource = Enum.GetValues(typeof(MammalType)).Cast<Enum>()
                 .Concat(Enum.GetValues(typeof(ReptileType)).Cast<Enum>()).ToList();
 
-            if(animalListBox.SelectedItem is Enum types)
+            if (animalListBox.SelectedItem is Enum types)
             {
                 switch (types)
                 {
@@ -332,7 +332,7 @@ namespace AnimalManagement
         /// <param name="e"> Event data for checkbox </param>
         private void hideAnimals(object sender, RoutedEventArgs e)
         {
-            if(typeChooser.SelectedItem is Types type)
+            if (typeChooser.SelectedItem is Types type)
             {
                 setSubTypes(type);
             }
@@ -345,7 +345,7 @@ namespace AnimalManagement
         /// <param name="e"> Event data for button click </param>
         private void deleteAnimal(object sender, RoutedEventArgs e)
         {
-            if(listAnimals.SelectedItem is Animal selectedAnimal)
+            if (listAnimals.SelectedItem is Animal selectedAnimal)
             {
                 if (manager.removeAnimal(selectedAnimal))
                 {
@@ -373,10 +373,10 @@ namespace AnimalManagement
         /// <param name="e"> Event data for button click </param>
         private void changeAnimal(object sender, RoutedEventArgs e)
         {
-            if(listAnimals.SelectedItem is Animal selected)
+            if (listAnimals.SelectedItem is Animal selected)
             {
                 var change = new ChangeView(selected.type, selected.species, selected);
-                if(change.ShowDialog() == true)
+                if (change.ShowDialog() == true)
                 {
                     var updated = change.updatedAnimal;
                     foreach (var f in updated)
@@ -408,7 +408,7 @@ namespace AnimalManagement
         /// <param name="selected"> Animal object </param>
         private void fillFields(Animal selected)
         {
-            if(selected == null)
+            if (selected == null)
             {
                 clearText();
                 return;
@@ -426,9 +426,92 @@ namespace AnimalManagement
         /// <param name="e"> Event data </param>
         private void Change_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == "selected")
+            if (e.PropertyName == "selected")
             {
                 fillFields(change.selected);
+            }
+        }
+
+        /// <summary>
+        /// Opens a file dialog to select and load an XML, JSON, or text file, then updates the list display.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void open(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Choose file",
+                Filter = "All Files (*.xml;*.json;*.txt)|*.xml;*.json;*.txt|" +
+                         "XML Files (*.xml)|*.xml|" +
+                         "JSON Files (*.json)|*.json|" +
+                         "Text Files (*.txt)|*.txt"
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                var filePath = dialog.FileName;
+                manager.loadFromFile(filePath);
+                updateList();
+            }
+        }
+
+        /// <summary>
+        /// Opens a save file dialog allowing the user to select a file path and saves data to the chosen file.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void saveAs(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Save file",
+                Filter = "All Files (*.xml;*.json;*.txt)|*.xml;*.json;*.txt|" +
+                         "XML Files (*.xml)|*.xml|" +
+                         "JSON Files (*.json)|*.json|" +
+                         "Text Files (*.txt)|*.txt"
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                var filePath = dialog.FileName;
+                manager.saveToFile(filePath);
+            }
+        }
+
+        private void save(object sender, RoutedEventArgs e)
+        {
+            if (manager.hasCurrentFilePath)
+            {
+                manager.saveToFile(manager.currentFilePath);
+                return;
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Title = "Save file",
+                Filter = "All Files (*.xml;*.json;*.txt)|*.xml;*.json;*.txt|" +
+                         "XML Files (*.xml)|*.xml|" +
+                         "JSON Files (*.json)|*.json|" +
+                         "Text Files (*.txt)|*.txt"
+            };
+
+            if(dialog.ShowDialog() == true)
+            {
+                manager.currentFilePath = dialog.FileName;
+                manager.saveToFile(manager.currentFilePath);
+            }
+        }
+
+        private void freshStart(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show(
+                "Are you sure? All unsaved progress will be lost forevah (ಥ_ಥ)",
+                "Clean slate?",
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Warning);
+
+            if(result == MessageBoxResult.OK)
+            {
+                manager.cleanSlate();
             }
         }
     }
