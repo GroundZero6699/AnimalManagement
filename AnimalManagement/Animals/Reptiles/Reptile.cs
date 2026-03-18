@@ -9,7 +9,7 @@ using AnimalManagement.Animals.Common;
 
 namespace AnimalManagement.Animals.Reptiles
 {
-    internal abstract class Reptile : Animal
+    public abstract class Reptile : Animal
     {
         public double bodyLength { get; set; }
         public string habitat { get; set; }

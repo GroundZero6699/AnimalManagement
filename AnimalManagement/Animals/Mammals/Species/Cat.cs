@@ -3,6 +3,7 @@ using AnimalManagement.Controller;
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 /*
  * Author: Christoffer Wiik
@@ -12,7 +13,7 @@ using System.Windows.Media.Imaging;
 
 namespace AnimalManagement.Animals.Mammals.Species
 {
-    internal class Cat : Mammal
+    public class Cat : Mammal
     {
         public string breed {  get; set; }
         public string livingType { get; set; }
@@ -64,6 +65,7 @@ namespace AnimalManagement.Animals.Mammals.Species
         /// <summary>
         /// Sets a general lifespan for animal
         /// </summary>
+        [XmlIgnore]
         public override int lifeSpan
         {
             get
@@ -75,6 +77,7 @@ namespace AnimalManagement.Animals.Mammals.Species
         /// <summary>
         /// Returns a general sleeping pattern
         /// </summary>
+        [XmlIgnore]
         public override string sleep
         {
             get
@@ -85,7 +88,8 @@ namespace AnimalManagement.Animals.Mammals.Species
 
         /// <summary>
         /// Creates a dictionary of foods for animal
-        /// </summary>
+        /// </summary
+        [XmlIgnore]
         public override Dictionary<string, string> food
         {
             get
@@ -102,6 +106,7 @@ namespace AnimalManagement.Animals.Mammals.Species
         /// <summary>
         /// A queue of events for animal
         /// </summary>
+        [XmlIgnore]
         public override Queue<string> events => new Queue<string>(new[]
         {
             "Jump on hooman",

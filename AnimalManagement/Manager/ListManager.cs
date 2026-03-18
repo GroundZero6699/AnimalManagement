@@ -4,11 +4,13 @@ using AnimalManagement.Animals.Mammals.Species;
 using AnimalManagement.Animals.Reptiles;
 using AnimalManagement.Animals.Reptiles.Species;
 using AnimalManagement.Controller;
+using AnimalManagement.Manager.Mapper;
 using AnimalManagement.Manager.Serialize;
-using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 
@@ -25,6 +27,7 @@ namespace AnimalManagement.Manager
     /// </summary>
     public class ListManager : IListManager
     {
+        private readonly AnimalMapper mapper = new();
         /// <summary>
         /// A collection of Animal objects that supports notifications when items are added, removed, or the entire list
         /// is refreshed.
@@ -111,12 +114,10 @@ namespace AnimalManagement.Manager
         /// <param name="filePath"> Path to file </param>
         private void saveAsJson(string filePath)
         {
-            var serial = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            };
+            var list = animalList.Select(animal => mapper.toXml(animal)).ToList();
 
-            string json = JsonConvert.SerializeObject(animalList, serial);
+
+            var json = System.Text.Json.JsonSerializer.Serialize(list, jsonoption);
             File.WriteAllText(filePath, json);
         }
 
@@ -126,11 +127,7 @@ namespace AnimalManagement.Manager
         /// <param name="filePath"> Path to file </param>
         private void saveAsXml(string filePath)
         {
-            var list = new List<AnimalXml>();
-            foreach (var animal in animalList)
-            {
-                list.Add(mapped(animal));
-            }
+            var list = animalList.Select(animal => mapper.toXml(animal)).ToList();
 
             var serial = new XmlSerializer(typeof(List<AnimalXml>),
                 new Type[]
@@ -158,7 +155,7 @@ namespace AnimalManagement.Manager
             {
                 if (animal == null) continue;
 
-                builder.AppendLine(string.Format("{0},{1},{2},{3},{4},{5},{6}",
+                builder.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
                                 animal.id, animal.name, animal.age, animal.weight, animal.gender, animal.image));
 
                 if (animal.type == Types.Mammal)
@@ -253,7 +250,8 @@ namespace AnimalManagement.Manager
                     age = int.Parse(baseInfo[2]),
                     weight = double.Parse(baseInfo[3]),
                     gender = Enum.Parse<Genders>(baseInfo[4]),
-                    image = new BitmapImage(new Uri(baseInfo[5], UriKind.RelativeOrAbsolute))
+                    image = new BitmapImage(new Uri(baseInfo[5], UriKind.RelativeOrAbsolute)),
+                    imagePath = baseInfo[5]
                 };
 
 
@@ -322,18 +320,68 @@ namespace AnimalManagement.Manager
         /// Loads animal data from a JSON file.
         /// </summary>
         /// <param name="filePath"> Path to file </param>
+        /// <exception cref="ArgumentException"> Thrown when file path is null </exception>
         private void loadJson(string filePath)
         {
-            string json = File.ReadAllText(currentFilePath);
-            var serial = new JsonSerializerSettings
+            var json = File.ReadAllText(filePath);
+            var document = System.Text.Json.JsonSerializer.Deserialize<List<JsonElement>>(json, jsonoption);
+
+            var animalXml = document.Select(doc => chopIt(doc)).ToList();
+
+            var animals = animalXml.Select(anim => mapper.fromXml(anim)).ToList();
+
+            foreach(var a in animals)
             {
-                TypeNameHandling = TypeNameHandling.All
-            };
-            var animals = JsonConvert.DeserializeObject<List<IAnimal>>(json, serial);
-            if (animals != null)
-            {
-                animalList = new ObservableCollection<IAnimal>(animals);
+                if (!string.IsNullOrEmpty(a.imagePath))
+                {
+                    a.loadImage();
+                }
             }
+
+            animalList = new ObservableCollection<IAnimal>(animals);
+        }
+
+        /// <summary>
+        /// Sets up the JsonSerializerOptions for deserialization, 
+        /// including handling of fields and enum values as strings.
+        /// </summary>
+        private readonly JsonSerializerOptions jsonoption = new()
+        {
+            IncludeFields = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
+        /// <summary>
+        /// Deserializes a JsonElement into an AnimalXml object based on the "type" and "species" properties.
+        /// </summary>
+        /// <param name="element"> Json element representing animal entry </param>
+        /// <returns> AnimalXml subclass </returns>
+        /// <exception cref="Exception"> Thrown when unknown type or species is encountered </exception>
+        private AnimalXml chopIt(JsonElement element)
+        {
+            string species = element.GetProperty("species").GetString();
+            string type = element.GetProperty("type").GetString();
+
+            return type switch
+            {
+                "Mammal" => species switch
+                {
+                    "Cat" => element.Deserialize<CatXml>(jsonoption),
+                    "Dog" => element.Deserialize<DogXml>(jsonoption),
+                    "Cow" => element.Deserialize<CowXml>(jsonoption),
+                    _ => throw new Exception("Unknown species")
+                },
+
+                "Reptile" => species switch
+                {
+                    "Lizard" => element.Deserialize<LizardXml>(jsonoption),
+                    "Snake" => element.Deserialize<SnakeXml>(jsonoption),
+                    "Turtle" => element.Deserialize<TurtleXml>(jsonoption),
+                    _ => throw new Exception("Unknown species")
+                },
+
+                _ => throw new Exception("Unknown type")
+            };
         }
 
         /// <summary>
@@ -343,275 +391,29 @@ namespace AnimalManagement.Manager
         /// <param name="filePath"> Path to file </param>
         private void loadXml(string filePath)
         {
-            var serial = new XmlSerializer(typeof(List<Animal>),
+            var serial = new XmlSerializer(typeof(List<AnimalXml>),
                 new Type[]
                 {
-                    typeof(Dog),
-                    typeof(Cat),
-                    typeof(Cow),
-                    typeof(Lizard),
-                    typeof(Snake),
-                    typeof(Turtle)
+                    typeof(DogXml),
+                    typeof(CatXml),
+                    typeof(CowXml),
+                    typeof(LizardXml),
+                    typeof(SnakeXml),
+                    typeof(TurtleXml)
                 });
-            using var stream = File.OpenRead(currentFilePath);
-            var animals = (List<Animal>)serial.Deserialize(stream);
-            animalList = new ObservableCollection<IAnimal>(animals);
-        }
+            using var stream = File.OpenRead(filePath);
+            var animalsXml = (List<AnimalXml>)serial.Deserialize(stream);
 
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// </summary>
-        /// <param name="animal"> Animal data</param>
-        /// <returns> Xml friendly animal object </returns>
-        /// <exception cref="Exception"> Thrown when the animal type is not supported </exception>
-        private AnimalXml mapped(IAnimal animal)
-        {
-            var general = new AnimalXml
-            {
-                name = animal.name,
-                age = animal.age,
-                weight = animal.weight,
-                gender = animal.gender,
-                imagePath = animal.image.UriSource.ToString(),
-                species = animal.species,
-                type = animal.type
-            };
+            var animals = animalsXml.Select(an => mapper.fromXml(an)).ToList();
 
-            switch (animal.type)
+            foreach (var a in animals)
             {
-                case Types.Mammal:
-                    var mammal = (Mammal)animal;
-                    return createMammal(general, mammal);
-                case Types.Reptile:
-                    var reptile = (Reptile)animal;
-                    return createReptile(general, reptile);
-                default:
-                    throw new Exception("Animal type not supported.");
+                if (!string.IsNullOrEmpty(a.imagePath))
+                {
+                    a.loadImage();
+                }
             }
-        }
-
-        /// <summary>
-        /// Maps mammal information to a xml friendly format.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="mammal"> Mammal data </param>
-        /// <returns> Xml friendly animal object </returns>
-        /// <exception cref="Exception"> Thrown when the animal type is not supported </exception>
-        private AnimalXml createMammal(AnimalXml general, Mammal mammal)
-        {
-            var mammalXml = new MammalXml
-            {
-                nrOfTeeth = mammal.nrOfTeeth,
-                fangs = mammal.fangs,
-                color = mammal.color
-            };
-
-            return mammal.species switch
-            {
-                "Dog" => mapDog(general, mammalXml, (Dog)mammal),
-                "Cat" => mapCat(general, mammalXml, (Cat)mammal),
-                "Cow" => mapCow(general, mammalXml, (Cow)mammal),
-                _ => throw new Exception("Mammal species not supported.")
-            };
-        }
-
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// To be serialized and saved to file.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="mammal"> Mammal data </param>
-        /// <param name="dog"> Dog data </param>
-        /// <returns> Xml friendly dog objekt </returns>
-        private DogXml mapDog(AnimalXml general, MammalXml mammal, Dog dog)
-        {
-            return new DogXml
-            {
-                name = general.name,
-                age = general.age,
-                weight = general.weight,
-                gender = general.gender,
-                imagePath = general.imagePath,
-                type = general.type,
-                species = general.species,
-
-                nrOfTeeth = mammal.nrOfTeeth,
-                fangs = mammal.fangs,
-                color = mammal.color,
-
-                breed = dog.breed,
-                chipped = dog.chipped,
-                ears = dog.ears
-            };
-        }
-
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// To be serialized and saved to file.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="mammal"> Mammal data </param>
-        /// <param name="cat"> Cat data </param>
-        /// <returns> Xml friendly cat objekt </returns>
-        private CatXml mapCat(AnimalXml general, MammalXml mammal, Cat cat)
-        {
-            return new CatXml
-            {
-                name = general.name,
-                age = general.age,
-                weight = general.weight,
-                gender = general.gender,
-                imagePath = general.imagePath,
-                type = general.type,
-                species = general.species,
-
-                nrOfTeeth = mammal.nrOfTeeth,
-                fangs = mammal.fangs,
-                color = mammal.color,
-
-                breed = cat.breed,
-                livingType = cat.livingType
-            };
-        }
-
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// To be serialized and saved to file.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="mammal"> Mammal data </param>
-        /// <param name="cow"> Cow data </param>
-        /// <returns> Xml friendly cow objekt </returns>
-        private CowXml mapCow(AnimalXml general, MammalXml mammal, Cow cow)
-        {
-            return new CowXml
-            {
-                name = general.name,
-                age = general.age,
-                weight = general.weight,
-                gender = general.gender,
-                imagePath = general.imagePath,
-                type = general.type,
-                species = general.species,
-
-                nrOfTeeth = mammal.nrOfTeeth,
-                fangs = mammal.fangs,
-                color = mammal.color,
-
-                tagged = cow.tagged,
-                tagNumber = cow.tagNumber,
-                milkContent = cow.milkContent
-            };
-        }
-
-        /// <summary>
-        /// Maps mammal information to a xml friendly format.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="reptile"> Reptile data </param>
-        /// <returns> Xml friendly animal object </returns>
-        /// <exception cref="Exception"> Thrown when the animal type is not supported </exception>
-        private AnimalXml createReptile(AnimalXml general, Reptile reptile)
-        {
-            var reptileXml = new ReptileXml
-            {
-                bodyLength = reptile.bodyLength,
-                habitat = reptile.habitat,
-                tail = reptile.tail
-            };
-            return reptile.species switch
-            {
-                "Lizard" => mapLizard(general, reptileXml, (Lizard)reptile),
-                "Snake" => mapSnake(general, reptileXml, (Snake)reptile),
-                "Turtle" => mapTurtle(general, reptileXml, (Turtle)reptile),
-                _ => throw new Exception("Reptile species not supported.")
-            };
-        }
-
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// To be serialized and saved to file.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="reptile"> Reptile data </param>
-        /// <param name="lizard"> Lizard data </param>
-        /// <returns> Xml friendly lizard objekt </returns>
-        private LizardXml mapLizard(AnimalXml general, ReptileXml reptile, Lizard lizard)
-        {
-            return new LizardXml
-            {
-                name = general.name,
-                age = general.age,
-                weight = general.weight,
-                gender = general.gender,
-                imagePath = general.imagePath,
-                type = general.type,
-                species = general.species,
-
-                bodyLength = reptile.bodyLength,
-                habitat = reptile.habitat,
-                tail = reptile.tail,
-
-                venomous = lizard.venomous
-            };
-        }
-
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// To be serialized and saved to file.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="reptile"> Reptile data </param>
-        /// <param name="snake"> Snake data </param>
-        /// <returns> Xml friendly snake objekt </returns>
-        private SnakeXml mapSnake(AnimalXml general, ReptileXml reptile, Snake snake)
-        {
-            return new SnakeXml
-            {
-                name = general.name,
-                age = general.age,
-                weight = general.weight,
-                gender = general.gender,
-                imagePath = general.imagePath,
-                type = general.type,
-                species = general.species,
-
-                bodyLength = reptile.bodyLength,
-                habitat = reptile.habitat,
-                tail = reptile.tail,
-
-                venomous = snake.venom,
-                pattern = snake.pattern
-            };
-        }
-
-        /// <summary>
-        /// Maps animal information to a xml friendly format.
-        /// To be serialized and saved to file.
-        /// </summary>
-        /// <param name="general"> Animal data </param>
-        /// <param name="reptile"> Reptile data </param>
-        /// <param name="turtle"> Turtle data </param>
-        /// <returns> Xml friendly turtle objekt </returns>
-        private TurtleXml mapTurtle(AnimalXml general, ReptileXml reptile, Turtle turtle)
-        {
-            return new TurtleXml
-            {
-                name = general.name,
-                age = general.age,
-                weight = general.weight,
-                gender = general.gender,
-                imagePath = general.imagePath,
-                type = general.type,
-                species = general.species,
-
-                bodyLength = reptile.bodyLength,
-                habitat = reptile.habitat,
-                tail = reptile.tail,
-
-                shellWidth = turtle.shellWidth,
-                shellHardness = turtle.shellHardness
-            };
+            animalList = new ObservableCollection<IAnimal>(animals);
         }
     }
 }

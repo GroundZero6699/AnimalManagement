@@ -2,6 +2,7 @@
 using AnimalManagement.Controller;
 using System.Text;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 /*
  * Author: Christoffer Wiik
@@ -11,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace AnimalManagement.Animals.Mammals.Species
 {
-    internal class Dog : Mammal
+    public class Dog : Mammal
     {
         public string breed {  get; set; }
         public string chipped { get; set; }
@@ -84,6 +85,7 @@ namespace AnimalManagement.Animals.Mammals.Species
         /// <summary>
         /// Returns a general sleeping pattern
         /// </summary>
+        [XmlIgnore]
         public override string sleep
         {
             get
@@ -95,6 +97,7 @@ namespace AnimalManagement.Animals.Mammals.Species
         /// <summary>
         /// Creates a dictionary of foods for animal
         /// </summary>
+        [XmlIgnore]
         public override Dictionary<string, string> food
         {
             get
@@ -112,6 +115,7 @@ namespace AnimalManagement.Animals.Mammals.Species
         /// <summary>
         /// A queue of events for animal
         /// </summary>
+        [XmlIgnore]
         public override Queue<string> events => new Queue<string>(new[]
         {
             "Eat breakfast",

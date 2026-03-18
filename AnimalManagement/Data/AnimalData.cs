@@ -20,7 +20,7 @@ namespace AnimalManagement.Controller
         public double weight { get; set; }
         public Genders gender { get; set; }
         public Types type { get; set; }
-
         public BitmapImage image { get; set; }
+        public string imagePath { get; set; }
     }
 }

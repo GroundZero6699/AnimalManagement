@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AnimalManagement" 
         xmlns:manager="clr-namespace:AnimalManagement.Manager"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1500"
+        Title="MainWindow" Height="800" Width="1600"
         x:Name="root">
     <Grid Background="DarkKhaki">
         
@@ -260,12 +260,41 @@
                      SelectedItem="{Binding ElementName=root, Path=change.selected}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Species" DisplayMemberBinding="{Binding species}" Width="120"/>
-                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding id}" Width="50"/>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="110"/>
-                        <GridViewColumn Header="Age" DisplayMemberBinding="{Binding age}" Width="80"/>
-                        <GridViewColumn Header="Weight" DisplayMemberBinding="{Binding weight}" Width="70"/>
-                        <GridViewColumn Header="Gender" DisplayMemberBinding="{Binding gender}" Width="120"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding species}" Width="120">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="Species" Click="sort" Tag="species"/>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
+                        
+                        <GridViewColumn DisplayMemberBinding="{Binding id}" Width="120">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="ID" Click="sort" Tag="ID"/>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
+                        
+                        <GridViewColumn DisplayMemberBinding="{Binding name}" Width="120">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="Name" Click="sort" Tag="Name"/>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
+                        
+                        <GridViewColumn DisplayMemberBinding="{Binding age}" Width="120">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="Age" Click="sort" Tag="Age"/>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
+                        
+                        <GridViewColumn DisplayMemberBinding="{Binding weight}" Width="120">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="Weight" Click="sort" Tag="Weight"/>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
+
+                        <GridViewColumn DisplayMemberBinding="{Binding gender}" Width="120">
+                            <GridViewColumn.Header>
+                                <GridViewColumnHeader Content="Gender" Click="sort" Tag="Gender"/>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>

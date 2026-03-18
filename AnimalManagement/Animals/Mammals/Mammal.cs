@@ -9,7 +9,7 @@ using AnimalManagement.Animals.Common;
 
 namespace AnimalManagement.Animals.Mammals
 {
-    internal abstract class Mammal : Animal
+    public abstract class Mammal : Animal
     {
         public int nrOfTeeth { get; set; }
         public string fangs { get; set; }

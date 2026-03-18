@@ -1,5 +1,6 @@
 ﻿using AnimalManagement.Animals.Common;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 /*
  * Author: Christoffer Wiik
@@ -17,16 +18,23 @@ namespace AnimalManagement.Animals
     {
         private static int _id = 1;
         public int id { get; }
-        public string name { get; protected set; }
-        public int age { get; protected set; }
-        public double weight { get; protected set; }
-        public Genders gender { get; protected set; }
+        public string name { get; set; }
+        public int age { get; set; }
+        public double weight { get; set; }
+        public Genders gender { get; set; }
+
+        [XmlIgnore]
         public BitmapImage image { get; protected set; }
+        public string imagePath { get; set; }
         public virtual string species => GetType().Name;
-        public Types type { get; protected set; }
+        public Types type { get; set; }
+        [XmlIgnore]
         public virtual string sleep => "Unknown sleeping habits";
-        public abstract int lifeSpan { get; }
+        [XmlIgnore]
+        public abstract int lifeSpan { get; }  
+        [XmlIgnore]
         public abstract Dictionary<string, string> food { get; }
+        [XmlIgnore]
         public abstract Queue<string> events { get; }
 
         /// <summary>
@@ -36,6 +44,23 @@ namespace AnimalManagement.Animals
         public Animal() 
         {
             id = _id++;
+        }
+
+        public void loadImage()
+        {
+            if (string.IsNullOrEmpty(imagePath))
+            {
+                return;
+            }
+
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+
+            image = bitmap;
         }
 
         /// <summary>

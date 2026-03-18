@@ -12,7 +12,7 @@ namespace AnimalManagement.Controller
     /// <summary>
     /// General data for a mammal type.
     /// </summary>
-    internal class MammalData
+    public class MammalData
     {
         public int nrOfTeeth { get; set; }
         public string fangs { get; set; }

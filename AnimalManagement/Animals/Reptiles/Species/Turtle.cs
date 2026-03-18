@@ -2,6 +2,7 @@
 using AnimalManagement.Controller;
 using System.Text;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 /*
  * Author: Christoffer Wiik
@@ -11,7 +12,7 @@ using System.Windows.Media.Imaging;
 
 namespace AnimalManagement.Animals.Reptiles.Species
 {
-    internal class Turtle : Reptile
+    public class Turtle : Reptile
     {
         public double shellWidth { get; set; }
         public int shellHardness { get; set; }
@@ -63,6 +64,7 @@ namespace AnimalManagement.Animals.Reptiles.Species
         /// <summary>
         /// Returns a dictionary of foods for the animal depending on habitat
         /// </summary>
+        [XmlIgnore]
         public override Dictionary<string, string> food
         {
             get
@@ -104,6 +106,7 @@ namespace AnimalManagement.Animals.Reptiles.Species
         /// <summary>
         /// Sets a general lifespan of animal
         /// </summary>
+        [XmlIgnore]
         public override int lifeSpan
         {
             get
@@ -115,6 +118,7 @@ namespace AnimalManagement.Animals.Reptiles.Species
         /// <summary>
         /// Returns a general sleeping pattern
         /// </summary>
+        [XmlIgnore]
         public override string sleep
         {
             get
@@ -126,6 +130,7 @@ namespace AnimalManagement.Animals.Reptiles.Species
         /// <summary>
         /// A queue of events for animal
         /// </summary>
+        [XmlIgnore]
         public override Queue<string> events => new Queue<string>(new[]
         {
             "Morning bath",

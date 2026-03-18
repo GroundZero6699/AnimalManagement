@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
 /*
@@ -34,6 +35,10 @@ namespace AnimalManagement
         public AnimalData generalData { get; set; }
         private IListManager manager { get; set; }
         public OnChange change { get; set; } = new OnChange();
+        private string selectedImagePath;
+        private BitmapImage img;
+        private GridViewColumnHeader headerClicked = null;
+        private ListSortDirection lastDirection = ListSortDirection.Ascending;
 
         /// <summary>
         /// Contructor initializes the main view and fills text areas with enum values
@@ -142,8 +147,8 @@ namespace AnimalManagement
                     age = int.Parse(ageBox.Text),
                     weight = double.Parse(weightBox.Text),
                     gender = (Genders)genderBox.SelectedItem,
-                    image = currentImage()
-
+                    image = currentImage(),
+                    imagePath = selectedImagePath
                 };
                 animalPanel.Visibility = Visibility.Visible;
             }
@@ -277,16 +282,15 @@ namespace AnimalManagement
                 Filter = "Image Files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
             };
 
-            bool? result = fileDialog.ShowDialog();
-
-            if (result == true)
+            if (fileDialog.ShowDialog() == true)
             {
-                string filePath = fileDialog.FileName;
-                var img = new BitmapImage(new Uri(filePath));
+                selectedImagePath = fileDialog.FileName;
+                img = new BitmapImage(new Uri(selectedImagePath));
 
                 if (generalData != null)
                 {
                     generalData.image = img;
+                    generalData.imagePath = selectedImagePath;
                 }
                 imageBox.Source = img;
             }
@@ -526,6 +530,36 @@ namespace AnimalManagement
             {
                 manager.cleanSlate();
             }
+        }
+
+        private void sort(object sender, RoutedEventArgs e)
+        {
+            var header = sender as GridViewColumnHeader;
+            if(header == null)
+            {
+                return;
+            }
+
+            string sortedBy = header.Tag.ToString();
+            ListSortDirection direction;
+
+            if(header == headerClicked)
+            {
+                direction = lastDirection == ListSortDirection.Ascending
+                    ? ListSortDirection.Descending : ListSortDirection.Ascending;
+            }
+            else
+            {
+                direction = ListSortDirection.Ascending;
+            }
+
+            var view = CollectionViewSource.GetDefaultView(listAnimals.ItemsSource);
+            view.SortDescriptions.Clear();
+            view.SortDescriptions.Add(new SortDescription(sortedBy, direction));
+            view.Refresh();
+
+            headerClicked = header;
+            lastDirection = direction;
         }
     }
 }

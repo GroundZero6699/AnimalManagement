@@ -11,7 +11,7 @@ namespace AnimalManagement.Controller
     /// <summary>
     /// General data for a reptile.
     /// </summary>
-    internal class ReptileData
+    public class ReptileData
     {
         public double bodyLength { get; set; }
         public string habitat { get; set; }

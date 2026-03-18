@@ -19,7 +19,9 @@ namespace AnimalManagement.Animals
         double weight { get; }
         Genders gender { get; }
         BitmapImage image { get; }
+        string imagePath { get; }
         Types type { get; }
         string species { get; }
+        void loadImage();
     }
 }
