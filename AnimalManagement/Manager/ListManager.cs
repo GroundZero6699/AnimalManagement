@@ -150,58 +150,56 @@ namespace AnimalManagement.Manager
         /// <returns> formatted string </returns>
         private string buildTxt()
         {
-            var builder = new StringBuilder();
-            foreach (IAnimal animal in animalList)
+            var lines = animalList.Where(animal => animal != null).Select(animal =>
             {
-                if (animal == null) continue;
+                var list = new List<string>();
 
-                builder.AppendLine(string.Format("{0},{1},{2},{3},{4},{5}",
-                                animal.id, animal.name, animal.age, animal.weight, animal.gender, animal.image));
+                list.Add($"{animal.id},{animal.name},{animal.age},{animal.weight},{animal.gender},{animal.imagePath}");
 
-                if (animal.type == Types.Mammal)
+                list.Add($"{animal.type},{animal.species}");
+
+                if (animal is Mammal mammal)
                 {
-                    builder.AppendLine(string.Format("{0},{1}", animal.type, animal.species));
-                    var mammal = (Mammal)animal;
-                    builder.AppendLine(string.Format("{0},{1},{2}", mammal.nrOfTeeth, mammal.fangs, mammal.color));
+                    list.Add($"{mammal.nrOfTeeth},{mammal.fangs},{mammal.color}");
                     switch (animal.species)
                     {
-                        case "Dog":
-                            var dog = (Dog)animal;
-                            builder.AppendLine(string.Format("{0},{1},{2}", dog.breed, dog.chipped, dog.ears));
-                            break;
                         case "Cat":
-                            var cat = (Cat)animal;
-                            builder.AppendLine(string.Format("{0},{1}", cat.breed, cat.livingType));
+                            var cat = (Cat)mammal;
+                            list.Add($"{cat.breed},{cat.livingType}");
+                            break;
+                        case "Dog":
+                            var dog = (Dog)mammal;
+                            list.Add($"{dog.breed},{dog.chipped},{dog.ears}");
                             break;
                         case "Cow":
-                            var cow = (Cow)animal;
-                            builder.AppendLine(string.Format("{0},{1},{2}", cow.tagged, cow.tagNumber, cow.milkContent));
+                            var cow = (Cow)mammal;
+                            list.Add($"{cow.tagged},{cow.tagNumber},{cow.milkContent}");
                             break;
                     }
                 }
-                else if (animal.type == Types.Reptile)
+                else if (animal is Reptile reptile)
                 {
-                    builder.AppendLine(string.Format("{0},{1}", animal.type, animal.species));
-                    var reptile = (Reptile)animal;
-                    builder.AppendLine(string.Format("{0},{1},{2}", reptile.bodyLength, reptile.habitat, reptile.tail));
+                    list.Add($"{reptile.bodyLength},{reptile.habitat},{reptile.tail}");
                     switch (animal.species)
                     {
                         case "Lizard":
-                            var lizard = (Lizard)animal;
-                            builder.AppendLine(string.Format("{0}", lizard.venomous));
+                            var lizard = (Lizard)reptile;
+                            list.Add($"{lizard.venomous}");
                             break;
                         case "Snake":
-                            var snake = (Snake)animal;
-                            builder.AppendLine(string.Format("{0},{1}", snake.venom, snake.pattern));
+                            var snake = (Snake)reptile;
+                            list.Add($"{snake.venom},{snake.pattern}");
                             break;
                         case "Turtle":
-                            var turtle = (Turtle)animal;
-                            builder.AppendLine(string.Format("{0},{1}", turtle.shellWidth, turtle.shellHardness));
+                            var turtle = (Turtle)reptile;
+                            list.Add($"{turtle.shellWidth},{turtle.shellHardness}");
                             break;
                     }
                 }
-            }
-            return builder.ToString();
+                return list;
+            });
+
+            return string.Join(Environment.NewLine, lines);
         }
 
         /// <summary>
@@ -236,84 +234,74 @@ namespace AnimalManagement.Manager
         /// <param name="filePath"> Path to file </param>
         private void loadText(string filePath)
         {
-            var line = File.ReadAllLines(filePath);
+            var lines = File.ReadAllLines(filePath);
 
-            int i = 0;
+            animalList = new ObservableCollection<IAnimal>(
+                Enumerable
+                    .Range(0, lines.Length)
+                    .Where(i => i % 4 == 0)
+                    .Select(i => parseAnimal(lines, i))
+                    .Where(a => a != null));
+        }
 
-            while (i < line.Length)
+        private IAnimal parseAnimal(string[] lines, int i)
+        {
             {
-                var baseInfo = line[i].Split(',');
+                var baseInfo = lines[i].Split(',');
+                var type = lines[i + 1].Split(',');
+                var species = lines[i + 2].Split(',');
+                var specific = lines[i + 3].Split(',');
 
-                AnimalData animalData = new AnimalData
+                var data = new AnimalData
                 {
                     name = baseInfo[1],
                     age = int.Parse(baseInfo[2]),
                     weight = double.Parse(baseInfo[3]),
                     gender = Enum.Parse<Genders>(baseInfo[4]),
                     image = new BitmapImage(new Uri(baseInfo[5], UriKind.RelativeOrAbsolute)),
-                    imagePath = baseInfo[5]
+                    imagePath = baseInfo[5],
                 };
 
+                string typeString = type[0];
+                string speciesString = type[1];
 
-                var typeInfo = line[i + 1].Split(',');
-                string type = typeInfo[0];
-                string species = typeInfo[1];
-
-                IAnimal animal = null;
-
-                if (type == "Mammal")
+                if (typeString == "Mammal")
                 {
-                    var mammalInfo = line[i + 2].Split(',');
-                    MammalData mammal = new MammalData
+                    var mammal = new MammalData
                     {
-                        animalSpecies = species,
-                        nrOfTeeth = int.Parse(baseInfo[6]),
-                        fangs = baseInfo[7],
-                        color = baseInfo[8]
+                        animalSpecies = speciesString,
+                        nrOfTeeth = int.Parse(specific[0]),
+                        fangs = specific[1],
+                        color = specific[2]
                     };
-                    switch (species)
+
+                    return speciesString switch
                     {
-                        case "Cat":
-                            var catInfo = line[i + 3].Split(',');
-                            animal = new Cat(animalData, mammal, catInfo[0], catInfo[1]);
-                            break;
-                        case "Dog":
-                            var dogInfo = line[i + 3].Split('.');
-                            animal = new Dog(animalData, mammal, dogInfo[0], dogInfo[1], dogInfo[2]);
-                            break;
-                        case "Cow":
-                            var cowInfo = line[i + 3].Split(',');
-                            animal = new Cow(animalData, mammal, cowInfo[0], int.Parse(cowInfo[1]), double.Parse(cowInfo[2]));
-                            break;
-                    }
+                        "Cat" => new Cat(data, mammal, specific[0], specific[1]),
+                        "Dog" => new Dog(data, mammal, specific[0], specific[1], specific[2]),
+                        "Cow" => new Cow(data, mammal, specific[0], int.Parse(specific[1]), double.Parse(specific[2])),
+                        _ => throw new Exception("Unknown species")
+                    };
                 }
-                else if (type == "Reptile")
+                else if (typeString == "Reptile")
                 {
-                    var reptileInfo = line[i + 2].Split(',');
-                    ReptileData reptile = new ReptileData
+                    var reptile = new ReptileData
                     {
-                        animalSpecies = species,
-                        bodyLength = double.Parse(reptileInfo[0]),
-                        habitat = reptileInfo[1],
-                        tail = reptileInfo[2]
+                        animalSpecies = speciesString,
+                        bodyLength = double.Parse(specific[0]),
+                        habitat = specific[1],
+                        tail = specific[2]
                     };
-                    switch (species)
+                    return speciesString switch
                     {
-                        case "Lizard":
-                            var lizardInfo = line[i + 3].Split(',');
-                            animal = new Lizard(animalData, reptile, lizardInfo[0]);
-                            break;
-                        case "Snake":
-                            var snakeInfo = line[i + 3].Split(',');
-                            animal = new Snake(animalData, reptile, snakeInfo[0], snakeInfo[1]);
-                            break;
-                        case "Turtle":
-                            var turtleInfo = line[i + 3].Split(',');
-                            animal = new Turtle(animalData, reptile, double.Parse(turtleInfo[0]), int.Parse(turtleInfo[1]));
-                            break;
-                    }
+                        "Lizard" => new Lizard(data, reptile, specific[3]),
+                        "Snake" => new Snake(data, reptile, specific[3], specific[4]),
+                        "Turtle" => new Turtle(data, reptile, double.Parse(specific[3]), int.Parse(specific[4])),
+                        _ => throw new Exception("Unknown species")
+                    };
                 }
             }
+            return null;
         }
 
         /// <summary>
