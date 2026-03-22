@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 
@@ -199,7 +200,9 @@ namespace AnimalManagement.Manager
                 return list;
             });
 
-            return string.Join(Environment.NewLine, lines);
+            var flatted = lines.SelectMany(l => l);
+
+            return string.Join(Environment.NewLine, flatted);
         }
 
         /// <summary>
@@ -267,12 +270,15 @@ namespace AnimalManagement.Manager
 
                 if (typeString == "Mammal")
                 {
+                    MessageBox.Show(specific[0]);
+                    MessageBox.Show(specific[1]);
+                    MessageBox.Show(specific[2]);
                     var mammal = new MammalData
                     {
                         animalSpecies = speciesString,
-                        nrOfTeeth = int.Parse(specific[0]),
-                        fangs = specific[1],
-                        color = specific[2]
+                        nrOfTeeth = int.Parse(species[0]),
+                        fangs = species[1],
+                        color = species[2]
                     };
 
                     return speciesString switch
@@ -287,10 +293,10 @@ namespace AnimalManagement.Manager
                 {
                     var reptile = new ReptileData
                     {
-                        animalSpecies = speciesString,
-                        bodyLength = double.Parse(specific[0]),
-                        habitat = specific[1],
-                        tail = specific[2]
+                        //animalSpecies = speciesString,
+                        bodyLength = double.Parse(species[0]),
+                        habitat = species[1],
+                        tail = species[2]
                     };
                     return speciesString switch
                     {
