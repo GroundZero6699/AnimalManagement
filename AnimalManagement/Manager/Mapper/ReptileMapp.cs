@@ -137,6 +137,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = reptile.imagePath,
                 type = reptile.type,
                 species = reptile.species,
+                derivedType = reptile.GetType().Name
             };
 
             var reptileXml = new ReptileXml
@@ -173,6 +174,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = general.imagePath,
                 type = general.type,
                 species = general.species,
+                derivedType = nameof(LizardXml),
 
                 bodyLength = reptile.bodyLength,
                 habitat = reptile.habitat,
@@ -201,6 +203,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = general.imagePath,
                 type = general.type,
                 species = general.species,
+                derivedType = nameof(SnakeXml),
 
                 bodyLength = reptile.bodyLength,
                 habitat = reptile.habitat,
@@ -230,6 +233,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = general.imagePath,
                 type = general.type,
                 species = general.species,
+                derivedType = nameof(TurtleXml),
 
                 bodyLength = reptile.bodyLength,
                 habitat = reptile.habitat,

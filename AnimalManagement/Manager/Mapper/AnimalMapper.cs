@@ -49,5 +49,38 @@ namespace AnimalManagement.Manager.Mapper
                 _ => throw new ArgumentException("Unsupported type")
             };
         }
+
+        /// <summary>
+        /// Convert a animal object into a serialized json representation.
+        /// Reuses the Xml mapping logic for the serialization.
+        /// </summary>
+        /// <param name="animal"> Animal object </param>
+        /// <returns> Json serialization model </returns>
+        public AnimalXml toJson(IAnimal animal)
+        {
+            return toXml(animal);
+        }
+
+        /// <summary>
+        /// Reverses the json serialization into animal objects.
+        /// </summary>
+        /// <param name="animal"> A serialization model for a animal object </param>
+        /// <returns> Animal object </returns>
+        /// <exception cref="Exception"> Throws exception on type error </exception>
+        public IAnimal fromJson(AnimalXml animal)
+        {
+            return animal.derivedType switch
+            {
+                nameof(CatXml) => mammal.fromXml((CatXml)animal),
+                nameof(DogXml) => mammal.fromXml((DogXml)animal),
+                nameof(CowXml) => mammal.fromXml((CowXml)animal),
+
+                nameof(LizardXml) => reptile.fromXml((LizardXml)animal),
+                nameof(SnakeXml) => reptile.fromXml((SnakeXml)animal),
+                nameof(TurtleXml) => reptile.fromXml((TurtleXml)animal),
+
+                _ => throw new Exception("Unknown type")
+            };
+        }
     }
 }

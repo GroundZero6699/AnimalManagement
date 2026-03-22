@@ -17,5 +17,6 @@ namespace AnimalManagement.Manager.Serialize
         public string imagePath { get; set; }
         public Types type { get; set; }
         public string species { get; set; }
+        public string derivedType { get; set; }
     }
 }

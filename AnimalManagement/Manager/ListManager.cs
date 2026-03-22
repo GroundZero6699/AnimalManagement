@@ -8,10 +8,8 @@ using AnimalManagement.Manager.Mapper;
 using AnimalManagement.Manager.Serialize;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 
@@ -115,10 +113,10 @@ namespace AnimalManagement.Manager
         /// <param name="filePath"> Path to file </param>
         private void saveAsJson(string filePath)
         {
-            var list = animalList.Select(animal => mapper.toXml(animal)).ToList();
+            var list = animalList.Select(animal => (object)mapper.toJson(animal)).ToList();
 
 
-            var json = System.Text.Json.JsonSerializer.Serialize(list, jsonoption);
+            var json = JsonSerializer.Serialize(list, jsonoption);
             File.WriteAllText(filePath, json);
         }
 
@@ -270,9 +268,6 @@ namespace AnimalManagement.Manager
 
                 if (typeString == "Mammal")
                 {
-                    MessageBox.Show(specific[0]);
-                    MessageBox.Show(specific[1]);
-                    MessageBox.Show(specific[2]);
                     var mammal = new MammalData
                     {
                         animalSpecies = speciesString,
@@ -293,16 +288,16 @@ namespace AnimalManagement.Manager
                 {
                     var reptile = new ReptileData
                     {
-                        //animalSpecies = speciesString,
+                        animalSpecies = speciesString,
                         bodyLength = double.Parse(species[0]),
                         habitat = species[1],
                         tail = species[2]
                     };
                     return speciesString switch
                     {
-                        "Lizard" => new Lizard(data, reptile, specific[3]),
-                        "Snake" => new Snake(data, reptile, specific[3], specific[4]),
-                        "Turtle" => new Turtle(data, reptile, double.Parse(specific[3]), int.Parse(specific[4])),
+                        "Lizard" => new Lizard(data, reptile, specific[0]),
+                        "Snake" => new Snake(data, reptile, specific[0], specific[1]),
+                        "Turtle" => new Turtle(data, reptile, double.Parse(specific[0]), int.Parse(specific[1])),
                         _ => throw new Exception("Unknown species")
                     };
                 }
@@ -318,11 +313,11 @@ namespace AnimalManagement.Manager
         private void loadJson(string filePath)
         {
             var json = File.ReadAllText(filePath);
-            var document = System.Text.Json.JsonSerializer.Deserialize<List<JsonElement>>(json, jsonoption);
+            var document = JsonSerializer.Deserialize<List<JsonElement>>(json, jsonoption);
 
             var animalXml = document.Select(doc => chopIt(doc)).ToList();
 
-            var animals = animalXml.Select(anim => mapper.fromXml(anim)).ToList();
+            var animals = animalXml.Select(anim => mapper.fromJson(anim)).ToList();
 
             foreach(var a in animals)
             {
@@ -353,26 +348,17 @@ namespace AnimalManagement.Manager
         /// <exception cref="Exception"> Thrown when unknown type or species is encountered </exception>
         private AnimalXml chopIt(JsonElement element)
         {
-            string species = element.GetProperty("species").GetString();
-            string type = element.GetProperty("type").GetString();
+            string type = element.GetProperty("derivedType").GetString();
 
             return type switch
             {
-                "Mammal" => species switch
-                {
-                    "Cat" => element.Deserialize<CatXml>(jsonoption),
-                    "Dog" => element.Deserialize<DogXml>(jsonoption),
-                    "Cow" => element.Deserialize<CowXml>(jsonoption),
-                    _ => throw new Exception("Unknown species")
-                },
+                nameof(CatXml) => element.Deserialize<CatXml>(jsonoption),
+                nameof(DogXml) => element.Deserialize<DogXml>(jsonoption),
+                nameof(CowXml) => element.Deserialize<CowXml>(jsonoption),
 
-                "Reptile" => species switch
-                {
-                    "Lizard" => element.Deserialize<LizardXml>(jsonoption),
-                    "Snake" => element.Deserialize<SnakeXml>(jsonoption),
-                    "Turtle" => element.Deserialize<TurtleXml>(jsonoption),
-                    _ => throw new Exception("Unknown species")
-                },
+                nameof(LizardXml) => element.Deserialize<LizardXml>(jsonoption),
+                nameof(SnakeXml) => element.Deserialize<SnakeXml>(jsonoption),
+                nameof(TurtleXml) => element.Deserialize<TurtleXml>(jsonoption),
 
                 _ => throw new Exception("Unknown type")
             };

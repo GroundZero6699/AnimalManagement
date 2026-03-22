@@ -1,5 +1,6 @@
 ﻿using AnimalManagement.Animals.Mammals;
 using AnimalManagement.Animals.Mammals.Species;
+using AnimalManagement.Animals.Reptiles;
 using AnimalManagement.Manager.Serialize;
 
 /*
@@ -129,6 +130,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = mammal.imagePath,
                 type = mammal.type,
                 species = mammal.species,
+                derivedType = mammal.GetType().Name
             };
 
             var mammalXml = new MammalXml
@@ -166,6 +168,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = general.imagePath,
                 type = general.type,
                 species = general.species,
+                derivedType = nameof(DogXml),
 
                 nrOfTeeth = mammal.nrOfTeeth,
                 fangs = mammal.fangs,
@@ -196,6 +199,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = general.imagePath,
                 type = general.type,
                 species = general.species,
+                derivedType = nameof(CatXml),
 
                 nrOfTeeth = mammal.nrOfTeeth,
                 fangs = mammal.fangs,
@@ -225,6 +229,7 @@ namespace AnimalManagement.Manager.Mapper
                 imagePath = general.imagePath,
                 type = general.type,
                 species = general.species,
+                derivedType = nameof(CowXml),
 
                 nrOfTeeth = mammal.nrOfTeeth,
                 fangs = mammal.fangs,
