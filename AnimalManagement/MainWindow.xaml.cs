@@ -7,7 +7,6 @@ using AnimalManagement.Manager;
 using AnimalManagement.Manager.View;
 using Microsoft.Win32;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;

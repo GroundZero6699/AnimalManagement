@@ -139,10 +139,6 @@ namespace AnimalManagement.Manager.View
         {
             if (validate())
             {
-                foreach (var f in fields)
-                {
-                    Console.WriteLine($"{f.bindName} = {f.Value}");
-                }
                 var nameEntry = fields.FirstOrDefault(f => string.Equals(f.bindName, "name", StringComparison.OrdinalIgnoreCase));
                 if(nameEntry != null) 
                 {
