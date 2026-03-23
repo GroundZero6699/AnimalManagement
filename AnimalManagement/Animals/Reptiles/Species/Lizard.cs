@@ -31,6 +31,7 @@ namespace AnimalManagement.Animals.Reptiles.Species
             gender = animal.gender;
             type = animal.type;
             image = animal.image;
+            imagePath = animal.imagePath;
 
             venomous = venom;
         }

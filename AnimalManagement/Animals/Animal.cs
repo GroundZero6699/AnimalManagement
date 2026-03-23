@@ -103,7 +103,13 @@ namespace AnimalManagement.Animals
             {
                 weight = weightValue;
             }
-            
+
+            var genderField = fieldList.FirstOrDefault(f => string.Equals(f.bindName, "gender", StringComparison.OrdinalIgnoreCase))?.Value;
+            if(Enum.TryParse<Genders>(genderField.ToString(), true, out var updatedGender))
+            {
+                gender = updatedGender;
+            }
+
             var imageField = fieldList.FirstOrDefault(f => string.Equals(f.bindName, "image", StringComparison.OrdinalIgnoreCase))?.Value;
             if (imageField != null && imageField is BitmapImage bitmapImage)
             {

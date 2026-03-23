@@ -35,6 +35,7 @@ namespace AnimalManagement.Animals.Mammals.Species
             gender = animal.gender;
             type = animal.type;
             image = animal.image;
+            imagePath = animal.imagePath;
 
             tagged = _tagged;
             tagNumber = _tagNumber;

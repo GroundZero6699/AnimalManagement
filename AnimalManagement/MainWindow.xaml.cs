@@ -285,7 +285,7 @@ namespace AnimalManagement
             if (fileDialog.ShowDialog() == true)
             {
                 selectedImagePath = fileDialog.FileName;
-                img = new BitmapImage(new Uri(selectedImagePath));
+                img = new BitmapImage(new Uri(selectedImagePath, UriKind.Absolute));
 
                 if (generalData != null)
                 {
@@ -383,10 +383,6 @@ namespace AnimalManagement
                 if (change.ShowDialog() == true)
                 {
                     var updated = change.updatedAnimal;
-                    foreach (var f in updated)
-                    {
-                        Debug.WriteLine($"{f.bindName} = {f.Value}");
-                    }
 
                     selected.update(updated);
                     fillFields(selected);
@@ -529,6 +525,9 @@ namespace AnimalManagement
             if(result == MessageBoxResult.OK)
             {
                 manager.cleanSlate();
+                animalInfo.Text = "";
+                infoBox.Text = "";
+                animalImage.Source = null;
             }
         }
 

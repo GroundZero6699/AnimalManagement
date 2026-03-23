@@ -4,7 +4,6 @@ using AnimalManagement.Animals.Mammals;
 using AnimalManagement.Animals.Reptiles;
 using AnimalManagement.Controller;
 using Microsoft.Win32;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -89,6 +88,7 @@ namespace AnimalManagement.Manager.View
                 age = animal.age,
                 weight = animal.weight,
                 image = animal.image,
+                gender = animal.gender,
             };
 
             return animalData;
@@ -137,12 +137,12 @@ namespace AnimalManagement.Manager.View
         /// <param name="e"> Event data </param>
         private void updateAnimal(object sender, RoutedEventArgs e)
         {
-            foreach(var f in fields)
-            {
-                Debug.WriteLine($"{f.bindName} = {f.Value}");
-            }
             if (validate())
             {
+                foreach (var f in fields)
+                {
+                    Console.WriteLine($"{f.bindName} = {f.Value}");
+                }
                 var nameEntry = fields.FirstOrDefault(f => string.Equals(f.bindName, "name", StringComparison.OrdinalIgnoreCase));
                 if(nameEntry != null) 
                 {
@@ -164,6 +164,11 @@ namespace AnimalManagement.Manager.View
                 if (imageEntry != null)
                 {
                     imageEntry.Value = imageField?.Source as BitmapImage;
+                }
+                var genderEntry = fields.FirstOrDefault(f => string.Equals(f.bindName, "gender", StringComparison.OrdinalIgnoreCase));
+                if(genderEntry != null)
+                {
+                    genderEntry.Value = genderBox.SelectedItem;
                 }
                 updatedAnimal = fields;
                 DialogResult = true;
@@ -262,6 +267,10 @@ namespace AnimalManagement.Manager.View
                 return false;
             }
             if(imageField == null)
+            {
+                return false;
+            }
+            if(genderBox == null)
             {
                 return false;
             }

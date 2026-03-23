@@ -22,6 +22,7 @@ namespace AnimalManagement.Manager.View
         public AnimalData data {  get; }
         public List<Fields> generalFields { get; }
         public ObservableCollection<Fields> SpeciesFields { get; }
+        public IEnumerable<Genders> genders { get; } = Enum.GetValues(typeof(Genders)).Cast<Genders>();
 
         /// <summary>
         /// Creates a view model for each animal by using the type of animal
@@ -41,7 +42,8 @@ namespace AnimalManagement.Manager.View
                 new Fields { bindName = "name", Label = "Name", Value = _data.name },
                 new Fields { bindName = "age", Label = "Age", Value = _data.age },
                 new Fields { bindName = "weight", Label = "Weight", Value = _data.weight },
-                new Fields { bindName = "image", Label = "Image", Value = _data.image }
+                new Fields { bindName = "image", Label = "Image", Value = _data.image },
+                new Fields { bindName = "gender", Label = "Gender", Value = _data.gender }
             };
 
             SpeciesFields = type switch

@@ -1,8 +1,6 @@
 ﻿using AnimalManagement.Animals.Common;
 using AnimalManagement.Controller;
 using System.Text;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 
 /*
@@ -34,6 +32,7 @@ namespace AnimalManagement.Animals.Mammals.Species
             gender = animal.gender;
             type = animal.type;
             image = animal.image;
+            imagePath = animal.imagePath;
 
             breed = _breed;
             livingType = _livingType;

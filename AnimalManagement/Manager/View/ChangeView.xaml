@@ -204,6 +204,7 @@
                 <RowDefinition Height="0.1*"/>
                 <RowDefinition Height="0.1*"/>
                 <RowDefinition Height="0.1*"/>
+                <RowDefinition Height="0.1*"/>
                 <RowDefinition Height="0.8*"/>
             </Grid.RowDefinitions>
             
@@ -276,10 +277,30 @@
                      BorderThickness="2"
                      Text="{Binding data.weight}"/>
 
+            <ComboBox Grid.Column="1" Grid.Row="4" 
+                      VerticalAlignment="Center"
+                      Width="150"
+                      HorizontalAlignment="Left"
+                      BorderBrush="Black"
+                      BorderThickness="2" Name="genderBox"
+                      ItemsSource="{Binding genders}"
+                      SelectedItem="{Binding data.gender, Mode=TwoWay}"/>
+            
+            <Label Content="Gender:"
+                   Grid.Column="0"
+                   Grid.Row="4"
+                   FontFamily="Segoe Print"
+                   FontSize="14"
+                   VerticalAlignment="Center"
+                   Margin="10, 0, 0, 0"
+                   FontWeight="ExtraBlack"/>
+            
+            
+
             <Image x:Name="imageField"
                    Grid.ColumnSpan="2"
                    Grid.Column="0"
-                   Grid.Row="4"
+                   Grid.Row="5"
                    Width="380"
                    Height="380"
                    VerticalAlignment="Top"
@@ -293,7 +314,7 @@
                     FontWeight="ExtraBlack"
                     Background="Crimson"
                     Grid.Column="0"
-                    Grid.Row="4"
+                    Grid.Row="5"
                     Grid.ColumnSpan="2"
                     VerticalAlignment="Bottom"
                     Height="30"

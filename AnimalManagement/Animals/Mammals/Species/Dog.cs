@@ -35,6 +35,7 @@ namespace AnimalManagement.Animals.Mammals.Species
             type = animal.type;
             gender = animal.gender;
             image = animal.image;
+            imagePath = animal.imagePath;
 
             breed = _breed;
             chipped = _chipped;

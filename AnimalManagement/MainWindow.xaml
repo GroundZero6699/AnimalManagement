@@ -266,33 +266,33 @@
                             </GridViewColumn.Header>
                         </GridViewColumn>
                         
-                        <GridViewColumn DisplayMemberBinding="{Binding id}" Width="120">
+                        <GridViewColumn DisplayMemberBinding="{Binding id}" Width="50">
                             <GridViewColumn.Header>
-                                <GridViewColumnHeader Content="ID" Click="sort" Tag="ID"/>
+                                <GridViewColumnHeader Content="ID" Click="sort" Tag="id"/>
                             </GridViewColumn.Header>
                         </GridViewColumn>
                         
-                        <GridViewColumn DisplayMemberBinding="{Binding name}" Width="120">
+                        <GridViewColumn DisplayMemberBinding="{Binding name}" Width="130">
                             <GridViewColumn.Header>
-                                <GridViewColumnHeader Content="Name" Click="sort" Tag="Name"/>
+                                <GridViewColumnHeader Content="Name" Click="sort" Tag="name"/>
                             </GridViewColumn.Header>
                         </GridViewColumn>
                         
-                        <GridViewColumn DisplayMemberBinding="{Binding age}" Width="120">
+                        <GridViewColumn DisplayMemberBinding="{Binding age}" Width="60">
                             <GridViewColumn.Header>
-                                <GridViewColumnHeader Content="Age" Click="sort" Tag="Age"/>
+                                <GridViewColumnHeader Content="Age" Click="sort" Tag="age"/>
                             </GridViewColumn.Header>
                         </GridViewColumn>
                         
-                        <GridViewColumn DisplayMemberBinding="{Binding weight}" Width="120">
+                        <GridViewColumn DisplayMemberBinding="{Binding weight}" Width="80">
                             <GridViewColumn.Header>
-                                <GridViewColumnHeader Content="Weight" Click="sort" Tag="Weight"/>
+                                <GridViewColumnHeader Content="Weight" Click="sort" Tag="weight"/>
                             </GridViewColumn.Header>
                         </GridViewColumn>
 
-                        <GridViewColumn DisplayMemberBinding="{Binding gender}" Width="120">
+                        <GridViewColumn DisplayMemberBinding="{Binding gender}" Width="150">
                             <GridViewColumn.Header>
-                                <GridViewColumnHeader Content="Gender" Click="sort" Tag="Gender"/>
+                                <GridViewColumnHeader Content="Gender" Click="sort" Tag="gender"/>
                             </GridViewColumn.Header>
                         </GridViewColumn>
                     </GridView>
