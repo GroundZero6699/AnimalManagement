@@ -1,6 +1,5 @@
 ﻿using AnimalManagement.Animals.Mammals;
 using AnimalManagement.Animals.Mammals.Species;
-using AnimalManagement.Animals.Reptiles;
 using AnimalManagement.Manager.Serialize;
 
 /*

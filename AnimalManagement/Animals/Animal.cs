@@ -46,6 +46,9 @@ namespace AnimalManagement.Animals
             id = _id++;
         }
 
+        /// <summary>
+        /// Creates a image from the image path after loading from file.
+        /// </summary>
         public void loadImage()
         {
             if (string.IsNullOrEmpty(imagePath))
